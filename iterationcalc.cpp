@@ -6,7 +6,7 @@ iterationCalc::iterationCalc(QObject *parent) : QObject(parent)
 }
 
 
-QChar iterationCalc::comp(double a, double b){
+short iterationCalc::comp(double a, double b){
 
     double c=a-b;
     if( qFabs(c)<=EPS)//a==b
@@ -53,8 +53,8 @@ int iterationCalc::iter_lin( QString expf, int count, double lam, double Xmin,
 {
     QString elog="";
 
-    QChar cmp;
-    QChar cmp_buf;
+    short cmp;
+    short cmp_buf;
     int n=0;
     double stb_buf;
     double stp=(Xmax-Xmin)/count;
@@ -69,7 +69,7 @@ int iterationCalc::iter_lin( QString expf, int count, double lam, double Xmin,
 
         cmp_buf=comp(linY[i], linX[i]);
 
-        if ( ( (cmp_buf==0) || (qAbs(cmp.digitValue() - cmp_buf.digitValue())==1) ) && i ){ // нипонятно
+        if (((cmp_buf==0)||(abs(cmp-cmp_buf)==1))&&i) {
             stb_buf=linX[i-1];
             stb_buf=(linX[i]+linX[i-1])*0.5;
             stabX[n]=stb_buf;
@@ -194,3 +194,7 @@ bool iterationCalc::iter_read (int count, QString s_lam, QString s_k, QString s_
     return true;
 }
 
+void iterationCalc::clear()
+{
+    m_calc->clear();
+}

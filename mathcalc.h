@@ -14,6 +14,7 @@ class mathCalc : public QObject
 public:
     explicit mathCalc(QObject *parent = 0);
     double calc(QString, QString*, double, double);
+    void clear();
 
 signals:
 

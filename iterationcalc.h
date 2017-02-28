@@ -15,13 +15,14 @@ public:
     explicit iterationCalc(QObject *parent = 0);
     bool iter_read (int count, QString s_lam, QString s_k, QString s_X, QString s_Xmin, QString s_Xmax, QString expf, QString df, QString* msg, int* n, int* k, \
                     double* abcsX, double* iterX, double* iterY, double* linX, double* linY, double* stabX, double* stabY);
+    void clear();
 
 signals:
 
 public slots:
 
 protected:
-    QChar comp(double a, double b);
+    short comp(double a, double b);
 
     int iter_stup( QString expf, int k, double lam, double X, double *iterX, double *iterY);
 

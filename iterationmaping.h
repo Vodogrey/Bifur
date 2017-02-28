@@ -35,6 +35,8 @@ protected:
     void addRandomGraph();
     void makeGraph();
     void clear();
+    virtual void keyPressEvent(QKeyEvent *event);
+
 private:
     QGridLayout* m_layout;
 
@@ -61,8 +63,6 @@ private:
     QCustomPlot* m_plot;
 
     iterationCalc* m_iterCalc;
-
-    // лямбда, количество точек, функция, начальное
 
     QString msg;// сообщение юзеру
 

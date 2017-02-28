@@ -310,3 +310,11 @@ double mathCalc::prim(QString str){
     return error(1);
 }
 
+void mathCalc::clear()
+{
+    _i=0;
+    _max=0;
+    ErrorLog="";
+    _X = 0;
+    _L = 0;
+}

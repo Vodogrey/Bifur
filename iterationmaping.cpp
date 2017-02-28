@@ -11,7 +11,7 @@ iterationMaping::iterationMaping(QWidget *parent) : QDialog(parent)
 void iterationMaping::GUI()
 {
     m_le_lambda = new QLineEdit("1.5");
-    m_le_countPoint = new QLineEdit("5");
+    m_le_countPoint = new QLineEdit("500");
     m_le_started = new QLineEdit("0");
     m_le_ended = new QLineEdit("1");
     m_le_func = new QLineEdit("l*x*(1-x)");
@@ -68,6 +68,11 @@ void iterationMaping::GUI()
 
 }
 
+void iterationMaping::keyPressEvent(QKeyEvent *event)
+{
+
+}
+
 void iterationMaping::slotStartClicked()
 {
     //int count=1000;//кол-во точек (>100)
@@ -81,7 +86,7 @@ void iterationMaping::slotStartClicked()
     //QString df="l-2*x*l";// производная
 
     countPoints = m_le_countPoint->text().toInt();
-    countSteps.append("5");
+    countSteps.append("50");
     lambda = m_le_lambda->text();
     s_X="0.1";//начало итерационной лестницы !!
     xMin = m_le_started->text();
@@ -103,13 +108,15 @@ void iterationMaping::slotStartClicked()
                 &msg, &n, &k, &abcsX[0], &iterX[0], &iterY[0],
                 &linX[0], &linY[0], &stabX[0], &stabY[0] )
             ) {
-        //clear();
         makeGraph();
     }
-        QMessageBox msgBox;
-        msgBox.setText(msg);
-        msgBox.exec();
+    QMessageBox msgBox;
+    msgBox.setText(msg);
+    msgBox.exec();
 
+
+    clear();
+    m_iterCalc->clear();
 }
 
 void iterationMaping::mouseWheel()
@@ -158,7 +165,7 @@ void iterationMaping::makeGraph()
 
 
     m_plot->addGraph();
-    m_plot->graph()->setData(iterX, iterY);
+    m_plot->graph()->setData(stabX, stabY);
     QPen stab;
     stab.setColor(QColor(Qt::green));
     stab.setWidthF(1);
@@ -166,11 +173,8 @@ void iterationMaping::makeGraph()
 
 
 
+    m_plot->rescaleAxes();
     m_plot->replot();
-
-    clear();
-
-
 }
 
 void iterationMaping::addRandomGraph()
@@ -203,4 +207,5 @@ void iterationMaping::clear()
     linY.clear();
     stabX.clear();
     stabY.clear();
+    countSteps.clear();
 }
