@@ -58,6 +58,9 @@ private:
     QLineEdit* m_le_derivative;
     QLabel* m_lb_derivative;
 
+    QLineEdit* m_le_start_iter;
+    QLabel* m_lb_start_iter;
+
     QPushButton* m_pb_start;
 
     QCustomPlot* m_plot;
@@ -66,17 +69,15 @@ private:
 
     QString msg;// сообщение юзеру
 
-    int countPoints;
+    int countPoints=1000;
     QString lambda;
     QString countSteps; //!!
     QString s_X;//начало итерационной лестницы
+    QString s_k;//начало итерационной лестницы
     QString xMin;
     QString xMax;
     QString func;
     QString derivative;
-
-    int n;
-    int k;
 
     QVector<double> abcsX;// абциса
     QVector<double> iterX;//итерационная лестница

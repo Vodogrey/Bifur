@@ -13,7 +13,7 @@ class iterationCalc : public QObject
     Q_OBJECT
 public:
     explicit iterationCalc(QObject *parent = 0);
-    bool iter_read (int count, QString s_lam, QString s_k, QString s_X, QString s_Xmin, QString s_Xmax, QString expf, QString df, QString* msg, int* n, int* k, \
+    bool iter_read (int count, QString s_lam, QString s_k, QString s_X, QString s_Xmin, QString s_Xmax, QString expf, QString df, QString* msg,  \
                     double* abcsX, double* iterX, double* iterY, double* linX, double* linY, double* stabX, double* stabY);
     void clear();
 

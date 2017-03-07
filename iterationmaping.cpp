@@ -10,26 +10,26 @@ iterationMaping::iterationMaping(QWidget *parent) : QDialog(parent)
 
 void iterationMaping::GUI()
 {
-    m_le_lambda = new QLineEdit("1.5");
-    m_le_countPoint = new QLineEdit("500");
-    m_le_started = new QLineEdit("0");
+    m_le_lambda = new QLineEdit("3.5");
+    m_le_countPoint = new QLineEdit("5");
+    m_le_started = new QLineEdit("-1");
     m_le_ended = new QLineEdit("1");
-    m_le_func = new QLineEdit("l*x*(1-x)");
-    m_le_derivative = new QLineEdit("l-2*x*l");
+    m_le_func = new QLineEdit("l*x*(1-x)");//("l*x*(1-x)");
+    m_le_derivative = new QLineEdit("l-2*x*l");//("l-2*x*l");
+    m_le_start_iter = new QLineEdit("0.25");
 
-    m_lb_countPoint = new QLabel("Введите количество точек");
-    m_lb_func = new QLabel("Введите функцию");
-    m_lb_lambda = new QLabel("Введите лямбду");
-    m_lb_started = new QLabel("Введите начальную точку");
-    m_lb_ended = new QLabel("Введите конечную точку");
-    m_lb_func = new QLabel("Введите функцию");
-    m_lb_derivative = new QLabel("Введите производную");
+    m_lb_countPoint = new QLabel("Величина лестницы");
+    m_lb_func = new QLabel("Функция");
+    m_lb_lambda = new QLabel("Параметр");
+    m_lb_started = new QLabel("Начало построения");
+    m_lb_ended = new QLabel("Конец построения");
+    m_lb_derivative = new QLabel("Производная");
+    m_lb_start_iter = new QLabel("Начало лестницы");
 
     m_pb_start = new QPushButton("Построить");
 
     m_plot = new QCustomPlot();
-    m_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
-                            QCP::iSelectLegend | QCP::iSelectPlottables);
+    m_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes | QCP::iSelectPlottables);
     m_plot->xAxis->setLabel("x");
     m_plot->yAxis->setLabel("y");
 
@@ -40,6 +40,9 @@ void iterationMaping::GUI()
 
     m_layout->addWidget(m_le_countPoint, 1, 1, 1, 1);
     m_layout->addWidget(m_lb_countPoint, 1, 0, 1, 1);
+
+    m_layout->addWidget(m_le_start_iter, 2, 1, 1, 1);
+    m_layout->addWidget(m_lb_start_iter, 2, 0, 1, 1);
 
     m_layout->addWidget(m_le_started, 3, 1, 1, 1);
     m_layout->addWidget(m_lb_started, 3, 0, 1, 1);
@@ -52,7 +55,6 @@ void iterationMaping::GUI()
 
     m_layout->addWidget(m_le_derivative, 6, 1, 1, 1);
     m_layout->addWidget(m_lb_derivative, 6, 0, 1, 1);
-
 
     m_layout->addWidget(m_pb_start, 7, 1, 1, 1);
 
@@ -70,7 +72,12 @@ void iterationMaping::GUI()
 
 void iterationMaping::keyPressEvent(QKeyEvent *event)
 {
+    int key=event->key();
 
+    if ( key==Qt::Key_Space ) {
+        m_plot->rescaleAxes();
+        m_plot->replot();
+    }
 }
 
 void iterationMaping::slotStartClicked()
@@ -85,29 +92,28 @@ void iterationMaping::slotStartClicked()
     //QString expf="l*x*(1-x)";//функция
     //QString df="l-2*x*l";// производная
 
-    countPoints = m_le_countPoint->text().toInt();
-    countSteps.append("50");
     lambda = m_le_lambda->text();
-    s_X="0.1";//начало итерационной лестницы !!
+    s_X=m_le_start_iter->text();
     xMin = m_le_started->text();
     xMax = m_le_ended->text();
     func = m_le_func->text();
     derivative = m_le_derivative->text();
+    s_k = m_le_countPoint->text();
 
     abcsX.resize(2);
-    abcsX.resize(countPoints);// абциса
-    iterX.resize(countPoints);//итерационная лестница
-    iterY.resize(countPoints);
+    iterX.resize(s_k.toInt()*2+1);//итерационная лестница
+    iterY.resize(s_k.toInt()*2+1);
     linX.resize(countPoints);//функция
     linY.resize(countPoints);
     stabX.resize(countPoints);//график устойчивых точек
     stabY.resize(countPoints);
 
     if( m_iterCalc->iter_read(
-                countPoints, lambda, countSteps, s_X, xMin, xMax, func, derivative,
-                &msg, &n, &k, &abcsX[0], &iterX[0], &iterY[0],
+                countPoints, lambda, s_k, s_X, xMin, xMax, func, derivative,
+                &msg, &abcsX[0], &iterX[0], &iterY[0],
                 &linX[0], &linY[0], &stabX[0], &stabY[0] )
             ) {
+
         makeGraph();
     }
     QMessageBox msgBox;
@@ -141,7 +147,20 @@ void iterationMaping::mousePress()
 
 void iterationMaping::makeGraph()
 {
+
     m_plot->clearGraphs();
+
+    m_plot->addGraph(); // !! стрелки
+    m_plot->graph()->setData(iterX, iterY);
+    QPen iter;
+    iter.setColor(QColor(Qt::green));
+    iter.setWidthF(1);
+    m_plot->graph()->setPen(iter);
+
+    //QCPScatterStyle iterScatter;
+    //iterScatter.setBrush(QCPScatterStyle::ssPeace);
+    m_plot->graph(0)->setScatterStyle(QCPScatterStyle::ssPeace);
+
     m_plot->addGraph();
     m_plot->graph()->setData(abcsX, abcsX);
     QPen abcsPen;
@@ -156,44 +175,14 @@ void iterationMaping::makeGraph()
     func.setWidthF(2);
     m_plot->graph()->setPen(func);
 
-    m_plot->addGraph(); // !! стрелки
-    m_plot->graph()->setData(iterX, iterY);
-    QPen iter;
-    iter.setColor(QColor(Qt::green));
-    iter.setWidthF(1);
-    m_plot->graph()->setPen(iter);
-
-
     m_plot->addGraph();
     m_plot->graph()->setData(stabX, stabY);
     QPen stab;
-    stab.setColor(QColor(Qt::green));
+    stab.setColor(QColor(Qt::yellow));
     stab.setWidthF(1);
     m_plot->graph()->setPen(stab);
 
-
-
     m_plot->rescaleAxes();
-    m_plot->replot();
-}
-
-void iterationMaping::addRandomGraph()
-{
-    int n = 50;
-
-    QVector<double> x(n), y(n);
-    for (int i=0; i<n; i++)
-    {
-        x[i] = qSin(qSin(qSin(qSin(qSin(qSin(qSin(qSin(qSin(qSin(qSin(i)))))))))));
-        y[i] = i;
-    }
-
-    m_plot->addGraph();
-    m_plot->graph()->setData(x, y);
-    QPen graphPen;
-    graphPen.setColor(QColor(Qt::red));
-    graphPen.setWidthF(2);
-    m_plot->graph()->setPen(graphPen);
     m_plot->replot();
 }
 

@@ -39,8 +39,9 @@ int iterationCalc::iter_stup( QString expf, int k, double lam,
             else  return 0;
         }
 
-        iterY[i]=X;
+        //X=( (double) ( ( (int) ((X + 0.0005) * 1000) ) / 1000.0 ) );//округление
 
+        iterY[i]=X;
         iterY[++i]=X;
         iterX[i]=X;
     }
@@ -116,7 +117,7 @@ int iterationCalc::iter_anal( QString df, QString* msg, int n, double lam, doubl
 
 bool iterationCalc::iter_read (int count, QString s_lam, QString s_k, QString s_X,
                                QString s_Xmin, QString s_Xmax, QString expf,
-                               QString df, QString* msg, int* n, int* k,
+                               QString df, QString* msg,
                                double* abcsX, double* iterX, double* iterY,
                                double* linX, double* linY, double* stabX,
                                double* stabY){
@@ -125,17 +126,27 @@ bool iterationCalc::iter_read (int count, QString s_lam, QString s_k, QString s_
     double X;
     double Xmin;
     double Xmax;
+    int k;
+    int n;
 
-    lam=m_calc->calc(s_lam, msg, 0, 0);
-    if(*msg!=""){
-        *msg+=" - L";
-        return false;
+    if(s_lam=="")
+        lam=0;
+    else{
+        lam=m_calc->calc(s_lam, msg, 0, 0);
+        if(*msg!=""){
+            *msg+=" - L";
+            return false;
+        }
     }
 
-    X=m_calc->calc(s_X, msg, 0, 0);
-    if(*msg!=""){
-        *msg+=" - Х";
-        return false;
+    if(s_X=="")
+        X=0;
+    else{
+        X=m_calc->calc(s_X, msg, 0, 0);
+        if(*msg!=""){
+            *msg+=" - Х";
+            return false;
+        }
     }
 
     Xmin=m_calc->calc(s_Xmin, msg, 0, 0);
@@ -150,12 +161,16 @@ bool iterationCalc::iter_read (int count, QString s_lam, QString s_k, QString s_
         return false;
     }
 
-    double buf=m_calc->calc(s_k, msg, 0, 0);
-    if(*msg!=""){
-        *msg+=" - k";
-        return false;
+    if(s_k=="")
+        k=0;
+    else{
+        double buf=m_calc->calc(s_k, msg, 0, 0);
+        if(*msg!=""||buf<0){
+            *msg+=" - k";
+            return false;
+        }
+        k=(int)buf;
     }
-    *k=(int)buf;
 
     m_calc->calc(expf, msg, Xmin, lam);
     if(*msg=="некорректное выражение"){
@@ -163,33 +178,34 @@ bool iterationCalc::iter_read (int count, QString s_lam, QString s_k, QString s_
         return false;
     }
 
+
     m_calc->calc(df, msg, Xmin, lam);
-    if(*msg=="некорректное выражение"){
+    if(*msg=="некорректное выражение" && df!=""){
         *msg+=" - df(x)/dx";
         return false;
     }
+
 
     if(comp(Xmax, Xmin)!=3){
         *msg="Xmax должен быть больше Xmin";
         return false;
     }
+
     *msg="";
 
-    abcsX[0]=Xmin;
-    abcsX[1]=Xmax;
+    n=iter_lin(expf, count, lam, Xmin, Xmax, &stabX[0], &stabY[0], &linX[0], &linY[0]);
 
-    *n=iter_lin(expf, count, lam, Xmin, Xmax, &stabX[0], &stabY[0], &linX[0], &linY[0]);
+    if (k){
+        if(iter_stup(expf, k, lam, X, &iterX[0], &iterY[0]))
+            *msg+="Точка начала построения итерационной диаграммы выбрана вне области определения функции";
+        abcsX[0]=Xmin;
+        abcsX[1]=Xmax;
+    }
 
-    if(iter_stup(expf, *k, lam, X, &iterX[0], &iterY[0]))
-        *msg+="Точка начала построения итерационной диаграммы выбрана вне области определения функции";
+    *msg+="Всего неподвижных точек: "+QString::number(n)+".\n";
 
-    *msg+="Всего неподвижных точек: "+QString::number(*n)+".\n";
-
-    if (n)
-        iter_anal( df, msg, *n, lam, &stabX[0]);
-
-    *k=*k*2+1;
-    *n=*n*3;
+    if (n && df!="")
+        iter_anal( df, msg, n, lam, &stabX[0]);
 
     return true;
 }
