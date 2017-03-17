@@ -64,6 +64,7 @@ private:
     QPushButton* m_pb_start;
 
     QCustomPlot* m_plot;
+    QCPCurve* m_iterCurve;
 
     iterationCalc* m_iterCalc;
 

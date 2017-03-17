@@ -32,42 +32,43 @@ void iterationMaping::GUI()
     m_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes | QCP::iSelectPlottables);
     m_plot->xAxis->setLabel("x");
     m_plot->yAxis->setLabel("y");
+    m_iterCurve = new QCPCurve(m_plot->xAxis, m_plot->yAxis);
 
     m_layout = new QGridLayout(this);
 
-    m_layout->addWidget(m_le_lambda, 0, 1, 1, 1);
+    m_layout->addWidget(m_le_lambda, 0, 1, 1, 8);
     m_layout->addWidget(m_lb_lambda, 0, 0, 1, 1);
 
-    m_layout->addWidget(m_le_countPoint, 1, 1, 1, 1);
+    m_layout->addWidget(m_le_countPoint, 1, 1, 1, 8);
     m_layout->addWidget(m_lb_countPoint, 1, 0, 1, 1);
 
-    m_layout->addWidget(m_le_start_iter, 2, 1, 1, 1);
+    m_layout->addWidget(m_le_start_iter, 2, 1, 1, 8);
     m_layout->addWidget(m_lb_start_iter, 2, 0, 1, 1);
 
-    m_layout->addWidget(m_le_started, 3, 1, 1, 1);
+    m_layout->addWidget(m_le_started, 3, 1, 1, 8);
     m_layout->addWidget(m_lb_started, 3, 0, 1, 1);
 
-    m_layout->addWidget(m_le_ended, 4, 1, 1, 1);
+    m_layout->addWidget(m_le_ended, 4, 1, 1, 8);
     m_layout->addWidget(m_lb_ended, 4, 0, 1, 1);
 
-    m_layout->addWidget(m_le_func, 5, 1, 1, 1);
+    m_layout->addWidget(m_le_func, 5, 1, 1, 8);
     m_layout->addWidget(m_lb_func, 5, 0, 1, 1);
 
-    m_layout->addWidget(m_le_derivative, 6, 1, 1, 1);
+    m_layout->addWidget(m_le_derivative, 6, 1, 1, 8);
     m_layout->addWidget(m_lb_derivative, 6, 0, 1, 1);
 
-    m_layout->addWidget(m_pb_start, 7, 1, 1, 1);
+    m_layout->addWidget(m_pb_start, 7, 4, 1, 1);
 
-    m_layout->addWidget(m_plot, 8, 0, 2, 2);
+    m_layout->addWidget(m_plot, 8, 0, 9, 9);
 
     connect(m_plot, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(mouseWheel()));
     connect(m_plot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress()));
 
     connect(m_pb_start, SIGNAL(clicked()), this, SLOT(slotStartClicked()));
 
+
     //    addRandomGraph();
     //    m_plot->rescaleAxes();
-
 }
 
 void iterationMaping::keyPressEvent(QKeyEvent *event)
@@ -77,20 +78,12 @@ void iterationMaping::keyPressEvent(QKeyEvent *event)
     if ( key==Qt::Key_Space ) {
         m_plot->rescaleAxes();
         m_plot->replot();
+        m_plot->xAxis->setScaleRatio(m_plot->xAxis,1.0);
     }
 }
 
 void iterationMaping::slotStartClicked()
 {
-    //int count=1000;//кол-во точек (>100)
-
-    //QString s_lam="1.5";//параметр (лямбда)
-    //QString s_k="5"; //количество ступений итерационный лестницы
-    //QString s_X="0.25";//начало итерационной лестницы
-    //QString s_Xmin="0";//левый предел
-    //QString s_Xmax="1";//правый предел
-    //QString expf="l*x*(1-x)";//функция
-    //QString df="l-2*x*l";// производная
 
     lambda = m_le_lambda->text();
     s_X=m_le_start_iter->text();
@@ -150,16 +143,11 @@ void iterationMaping::makeGraph()
 
     m_plot->clearGraphs();
 
-    m_plot->addGraph(); // !! стрелки
-    m_plot->graph()->setData(iterX, iterY);
+    m_iterCurve->setData(iterX, iterY);
     QPen iter;
     iter.setColor(QColor(Qt::green));
     iter.setWidthF(1);
-    m_plot->graph()->setPen(iter);
-
-    //QCPScatterStyle iterScatter;
-    //iterScatter.setBrush(QCPScatterStyle::ssPeace);
-    m_plot->graph(0)->setScatterStyle(QCPScatterStyle::ssPeace);
+    m_iterCurve->setPen(iter);
 
     m_plot->addGraph();
     m_plot->graph()->setData(abcsX, abcsX);
@@ -183,7 +171,9 @@ void iterationMaping::makeGraph()
     m_plot->graph()->setPen(stab);
 
     m_plot->rescaleAxes();
+    m_plot->xAxis->setScaleRatio(m_plot->yAxis,1.0);
     m_plot->replot();
+
 }
 
 void iterationMaping::clear()
