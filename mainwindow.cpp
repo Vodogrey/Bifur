@@ -20,7 +20,9 @@ void MainWindow::GUI()
     this->setCentralWidget(m_widget);
 
     m_iter = new iterationMaping();
+    m_paramDiag = new paramDiagramMaping();
     m_tabs->addTab(m_iter, tr("Итерационный"));
+    m_tabs->addTab(m_paramDiag, tr("Бифуркационная диаграмма"));
 
 }
 

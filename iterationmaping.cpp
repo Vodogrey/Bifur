@@ -30,6 +30,7 @@ void iterationMaping::GUI()
 
     m_plot = new QCustomPlot();
     m_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes | QCP::iSelectPlottables);
+    m_plot->setContextMenuPolicy(Qt::CustomContextMenu);
     m_plot->xAxis->setLabel("x");
     m_plot->yAxis->setLabel("y");
     m_iterCurve = new QCPCurve(m_plot->xAxis, m_plot->yAxis);
@@ -65,6 +66,7 @@ void iterationMaping::GUI()
     connect(m_plot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress()));
 
     connect(m_pb_start, SIGNAL(clicked()), this, SLOT(slotStartClicked()));
+    connect(m_plot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(rightClick(QPoint)));
 
 
     //    addRandomGraph();
@@ -77,9 +79,43 @@ void iterationMaping::keyPressEvent(QKeyEvent *event)
 
     if ( key==Qt::Key_Space ) {
         m_plot->rescaleAxes();
+        m_plot->xAxis->setScaleRatio(m_plot->yAxis,1.0);
         m_plot->replot();
-        m_plot->xAxis->setScaleRatio(m_plot->xAxis,1.0);
     }
+}
+
+void iterationMaping::rightClick(QPoint pos)
+{
+    QMenu* menu = new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+
+    menu->addAction("Сохранить как изображение", this, SLOT(saveAsImage()));
+
+    menu->popup(m_plot->mapToGlobal(pos));
+}
+
+void iterationMaping::saveAsImage()
+{
+    QString fileWay = QFileDialog::getSaveFileName(this,
+                                                QString::fromUtf8("Выберите файл"),
+                                                QDir::currentPath(),
+                                                "BMP (*.bmp);;JPG (*.jpg);; PNG (*.png)");
+    QFile file(fileWay);
+    QString fileType = QFileInfo(file).suffix();
+
+    if(!file.open(QIODevice::WriteOnly | QFile::WriteOnly)) {
+        QMessageBox::warning(0, "Ошибка создания файла",
+                             QObject::tr("\n Не удалось создать файл."));
+        return;
+    }
+
+    if(fileType == "bmp")
+        m_plot->saveBmp(fileWay, 0, 0, 1.0, -1);
+    if(fileType == "jpg")
+        m_plot->saveJpg(fileWay, 0, 0, 1.0, -1);
+    if(fileType == "png")
+        m_plot->savePng(fileWay, 0, 0, 1.0, -1);
+
 }
 
 void iterationMaping::slotStartClicked()

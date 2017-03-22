@@ -10,6 +10,7 @@
 #include <QTabWidget>
 
 #include "iterationmaping.h"
+#include "paramdiagrammaping.h"
 
 class MainWindow : public QMainWindow
 {
@@ -32,6 +33,7 @@ private:
     QTabWidget* m_tabs;
 
     iterationMaping* m_iter;
+    paramDiagramMaping* m_paramDiag;
 };
 
 #endif // MAINWINDOW_H

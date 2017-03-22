@@ -8,6 +8,9 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QMenu>
+#include <QFileDialog>
+#include <QMessageBox>
 
 #include "qcustomplot.h"
 #include "iterationcalc.h"
@@ -29,6 +32,8 @@ private slots:
     void mouseWheel();
     void mousePress();
     void slotStartClicked();
+    void rightClick(QPoint pos);
+    void saveAsImage();
 
 protected:
     void GUI();
