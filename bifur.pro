@@ -13,11 +13,13 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     iterationmaping.cpp \
     mathcalc.cpp \
-    iterationcalc.cpp
+    iterationcalc.cpp \
+    paramdiagrammaping.cpp
 
 HEADERS += \
     qcustomplot.h \
     mainwindow.h \
     iterationmaping.h \
     mathcalc.h \
-    iterationcalc.h
+    iterationcalc.h \
+    paramdiagrammaping.h
