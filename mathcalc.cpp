@@ -1,5 +1,7 @@
 #include "mathcalc.h"
 
+using namespace std;
+
 mathCalc::mathCalc(QObject *parent) : QObject(parent)
 {
     setPatterns();

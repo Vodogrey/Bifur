@@ -176,33 +176,34 @@ void iterationMaping::mousePress()
 
 void iterationMaping::makeGraph()
 {
+    short sz=3;//толщина линий
 
     m_plot->clearGraphs();
 
     m_iterCurve->setData(iterX, iterY);
     QPen iter;
-    iter.setColor(QColor(Qt::green));
-    iter.setWidthF(1);
+    iter.setColor(QColor(Qt::black));
+    iter.setWidthF(sz);
     m_iterCurve->setPen(iter);
 
     m_plot->addGraph();
     m_plot->graph()->setData(abcsX, abcsX);
     QPen abcsPen;
     abcsPen.setColor(QColor(Qt::red));
-    abcsPen.setWidthF(1);
+    abcsPen.setWidthF(sz);
     m_plot->graph()->setPen(abcsPen);
 
     m_plot->addGraph();
     m_plot->graph()->setData(linX, linY);
     QPen func;
     func.setColor(QColor(Qt::blue));
-    func.setWidthF(2);
+    func.setWidthF(sz);
     m_plot->graph()->setPen(func);
 
     m_plot->addGraph();
     m_plot->graph()->setData(stabX, stabY);
     QPen stab;
-    stab.setColor(QColor(Qt::yellow));
+    stab.setColor(QColor(Qt::red));
     stab.setWidthF(1);
     m_plot->graph()->setPen(stab);
 

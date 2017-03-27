@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     iterationmaping.cpp \
     mathcalc.cpp \
     iterationcalc.cpp \
-    paramdiagrammaping.cpp
+    paramdiagrammaping.cpp \
+    paramdiagram.cpp
 
 HEADERS += \
     qcustomplot.h \
@@ -22,4 +23,5 @@ HEADERS += \
     iterationmaping.h \
     mathcalc.h \
     iterationcalc.h \
-    paramdiagrammaping.h
+    paramdiagrammaping.h \
+    paramdiagram.h
