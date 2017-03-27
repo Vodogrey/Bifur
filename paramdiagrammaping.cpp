@@ -25,11 +25,10 @@ void paramDiagramMaping::GUI()
     m_pb_start = new QPushButton("Построить");
 
     m_plot = new QCustomPlot();
-    m_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes | QCP::iSelectPlottables);
+    m_plot->setInteractions(QCP::iSelectAxes | QCP::iSelectPlottables);
     m_plot->setContextMenuPolicy(Qt::CustomContextMenu);
     m_plot->xAxis->setLabel("L");
     m_plot->yAxis->setLabel("X");
-    m_iterCurve = new QCPCurve(m_plot->xAxis, m_plot->yAxis);
 
     m_layout = new QGridLayout(this);
 
@@ -52,7 +51,6 @@ void paramDiagramMaping::GUI()
 
     m_layout->addWidget(m_plot, 8, 0, 9, 9);
 
-    connect(m_plot, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(mouseWheel()));
     connect(m_plot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress()));
 
     connect(m_pb_start, SIGNAL(clicked()), this, SLOT(slotStartClicked()));
@@ -84,9 +82,9 @@ void paramDiagramMaping::rightClick(QPoint pos)
 void paramDiagramMaping::saveAsImage()
 {
     QString fileWay = QFileDialog::getSaveFileName(this,
-                                                QString::fromUtf8("Выберите файл"),
-                                                QDir::currentPath(),
-                                                "BMP (*.bmp);;JPG (*.jpg);; PNG (*.png)");
+                                                   QString::fromUtf8("Выберите файл"),
+                                                   QDir::currentPath(),
+                                                   "BMP (*.bmp);;JPG (*.jpg);; PNG (*.png)");
     QFile file(fileWay);
     QString fileType = QFileInfo(file).suffix();
 
@@ -115,40 +113,30 @@ void paramDiagramMaping::slotStartClicked()
     s_start=m_le_started->text();
     s_end=m_le_ended->text();
 
-    if(pix>0){
+    if(pix>0) {
 
         paramX.resize(count*pix);
         paramY.resize(count*pix);
 
-        if(m_paramDiagram->param_read (count, pix, expf, s_x, s_start, s_end, &msg, &paramX[0], &paramY[0]))
-              makeGraph();
-        else{
+        if(m_paramDiagram->param_read (count, pix, expf, s_x, s_start, s_end, &msg, &paramX[0], &paramY[0])) {
+            makeGraph();
+        }
+        else {
 
-             msgBox.setText(msg);
-             msgBox.exec();
-
+            msgBox.setText(msg);
+            msgBox.exec();
         }
 
-    }else{
+    }
+    else {
 
-         msgBox.setText("Неверное разрешение");
-         msgBox.exec();
+        msgBox.setText("Неверное разрешение");
+        msgBox.exec();
 
     }
 
     clear();
     m_paramDiagram->clear();
-
-}
-
-void paramDiagramMaping::mouseWheel()
-{
-    if (m_plot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
-        m_plot->axisRect()->setRangeZoom(m_plot->xAxis->orientation());
-    else if (m_plot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
-        m_plot->axisRect()->setRangeZoom(m_plot->yAxis->orientation());
-    else
-        m_plot->axisRect()->setRangeZoom(Qt::Horizontal|Qt::Vertical);
 
 }
 
@@ -167,11 +155,11 @@ void paramDiagramMaping::makeGraph()
 
     m_plot->clearGraphs();
 
-    m_iterCurve->setData(paramX, paramY);
-    QPen iter;
-    iter.setColor(QColor(Qt::black));
-    iter.setWidthF(1);
-    m_iterCurve->setPen(iter);
+    m_plot->addGraph();
+    m_plot->graph(0)->setData(paramX, paramY);
+    m_plot->graph(0)->setPen(QPen(Qt::black));
+    m_plot->graph(0)->setLineStyle(QCPGraph::lsNone);
+    m_plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 1));
 
     m_plot->rescaleAxes();
     m_plot->xAxis->setScaleRatio(m_plot->yAxis,1.0);

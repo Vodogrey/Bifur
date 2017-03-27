@@ -37,7 +37,6 @@ signals:
 public slots:
 
 private slots:
-    void mouseWheel();
     void mousePress();
     void slotStartClicked();
     void rightClick(QPoint pos);
@@ -68,7 +67,6 @@ private:
     QPushButton* m_pb_start;
 
     QCustomPlot* m_plot;
-    QCPCurve* m_iterCurve;
 
     paramDiagram* m_paramDiagram;
 
